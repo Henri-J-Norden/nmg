@@ -90,6 +90,7 @@ namespace NMG.Core.Reader
                                          ? sqlDataReader.GetString(3).Equals(
                                              NpgsqlConstraintType.ForeignKey.ToString(),
                                              StringComparison.CurrentCultureIgnoreCase)
+                                             || (columnName.EndsWith("_id") && !columnName.Equals("bim_id"))
                                          : false);
 
                                 var m = new DataTypeMapper();
@@ -256,8 +257,9 @@ a.table_schema='" + owner+"' and a.table_name='"+tablename+"' and a.column_name=
                                    {
                                        Name = c.Name,
                                        References = GetForeignKeyReferenceTableName(table.Name, c.Name),
-                                       Columns = DetermineColumnsForForeignKey(table.Columns, c.ConstraintName)
+                                       Columns = DetermineColumnsForForeignKey(table.Columns, c.ConstraintName).Where(col => col.Name == c.Name).ToList()
                                    }).ToList();
+            
 
             Table.SetUniqueNamesForForeignKeyProperties(foreignKeys);
 
@@ -346,10 +348,11 @@ a.table_schema='" + owner+"' and a.table_name='"+tablename+"' and a.column_name=
 
                     while (reader.Read())
                     {
-                        hasManyRelationships.Add(new HasMany
-                        {
-                            Reference = reader.GetString(1)
-                        });
+                        var hasMany = new HasMany {
+                           Reference = reader.GetString(1)
+                        };
+                        //hasMany.AllReferenceColumns.Add(reader.GetString(0)+"_id");
+                        hasManyRelationships.Add(hasMany);
                     }
 
                     return hasManyRelationships;

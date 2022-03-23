@@ -37,7 +37,7 @@ namespace NMG.Core.Domain
 		    var groupedForeignKeys = (from fk in foreignKeys
 		                              group fk by fk.References
 		                              into g
-		                              where g.Count() > 1
+		                              where g.Count() >= 1
 		                              select g).ToList();
 
 		    foreach (var group in groupedForeignKeys)
@@ -45,7 +45,7 @@ namespace NMG.Core.Domain
 		        foreach (var fk in group)
 		        {
                     // Use the field name instead of the table name
-		            fk.UniquePropertyName = fk.Columns.First().Name;
+		            fk.UniquePropertyName = fk.References;
 		        }
 		    }
 

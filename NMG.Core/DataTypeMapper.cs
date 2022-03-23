@@ -240,6 +240,7 @@ namespace NMG.Core
 
                 case "FLOAT":
                 case "BINARY_FLOAT":
+                case "DOUBLE PRECISION":
                     return typeof(float);
 
                 case "BLOB":
